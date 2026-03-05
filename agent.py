@@ -7,8 +7,14 @@ import time
 
 load_dotenv()
 
-API_KEY =  os.getenv("GROQ_API_KEY")
-API_URL = "https://api.groq.com/openai/v1/chat/completions"
+try:
+    import streamlit as st
+    API_KEY = st.secrets["GROQ_API_KEY"]
+except Exception:
+    API_KEY = os.getenv("GROQ_API_KEY")
+
+# API_KEY =  os.getenv("GROQ_API_KEY")
+# API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 HEADERS = {
     "Content-Type": "application/json",
