@@ -131,10 +131,6 @@ def ask_groq(user_message):
  2. Second step
  3. Third step
  
- ##  Evidence Found
- Use bullet points:
- - Tool name: what it found
- - Tool name: what it found
  """
  },
         {"role": "user", "content": user_message}
@@ -148,24 +144,41 @@ def ask_groq(user_message):
     }
 
     for iteration in range(8):
-        print(f"\n--- Iteration {iteration + 1} ---")
+        # print(f"\n--- Iteration {iteration + 1} ---")
 
-        response = requests.post(API_URL, headers=HEADERS, json=body)
-        data = response.json()
+        data = None
+        for attempt in range(3):  # Try twice in case of tool generation failure
 
-        if "error" in data:
-            error_mssg = data["error"]["message"]
-
-            if "failed_generation" in error_mssg or "Failed to call a function" in error_mssg:
-                print(f"Groq tool generation failed, retrying .....")
-                time.sleep(1)
-                response = requests.post(API_URL, headers=HEADERS, json=body)
-                data = response.json()
+            response = requests.post(API_URL, headers=HEADERS, json=body)
+            data = response.json()
 
             if "error" in data:
-                trace.log("Error", data["error"]["message"])
-                print("Error:", data["error"]["message"])
-                return {"answer": None, "trace": trace.steps}
+                error_mssg = data["error"]["message"]
+
+
+                if "rate_limit" in error_mssg or "Rate limit" in error_mssg:
+                    wait = 10
+                    print(f"  Rate limit hit, waiting {wait}s before retry {attempt + 1}...")
+                    time.sleep(wait)
+                    continue
+
+                if "failed_generation" in error_mssg or "Failed to call a function" in error_mssg:
+                    print(f"Groq tool generation failed, retrying .....")
+                    time.sleep(1)
+                    response = requests.post(API_URL, headers=HEADERS, json=body)
+                    data = response.json()
+
+                # Any other error — stop retrying
+                trace.log("Error", error_mssg)
+                return {"answer": f"Error: {error_mssg}", "trace": trace.steps}
+            
+            else:
+                break  # Successful response, exit retry loop
+
+        if "error" in data:
+            trace.log("Error", data["error"]["message"])
+            print("Error:", data["error"]["message"])
+            return {"answer": None, "trace": trace.steps}
         
         reply = data["choices"][0]["message"]
 
