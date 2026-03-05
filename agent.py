@@ -13,8 +13,11 @@ try:
 except Exception:
     API_KEY = os.getenv("GROQ_API_KEY")
 
+
+API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
 # API_KEY =  os.getenv("GROQ_API_KEY")
-# API_URL = "https://api.groq.com/openai/v1/chat/completions"
+#
 
 HEADERS = {
     "Content-Type": "application/json",
