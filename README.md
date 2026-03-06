@@ -1,10 +1,5 @@
 # BOTIC — Agentic IT Support Assistant
 
-**Submitted by:** Katende  
-**Institution:** Makerere University  
-**Assessment:** Otic Agentic AI Internship — Practical Assignment  
-**Date:** March 2026
-
 ---
 
 ## What BOTIC Is
