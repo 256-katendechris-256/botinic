@@ -150,7 +150,7 @@ create_ticket with severity 'critical' before giving the final answer.
  
  """
  },
-        {"role": "user", "content": user_message}
+       
     ]
 
     if chat_history:
